@@ -19,6 +19,8 @@ export default function TimePicker({bookingTimes,length,meetingUri,username}:{bo
     const [busySlots, setBusySlots] = useState<TimeSlot[]>([]);
     const[busySlotsLoaded, setBusySlotsLoaded] = useState(false);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     useEffect(()=>{
         if(selectedDay){
             setBusySlots([]);

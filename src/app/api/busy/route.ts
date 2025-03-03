@@ -29,9 +29,9 @@ export async function GET(req:NextRequest) {
 
     let busySlots:TimeSlot[] = [];
     if(nylasBusyResult.data?.[0]){
-        // @ts-expect-error
+        // @ts-expect-error: `timeSlots` property is missing in Nylas typings, but it exists in runtime response
         const slots = nylasBusyResult.data?.[0].timeSlots as TimeSlot[];
-        // @ts-expect-error
+         // @ts-expect-error: `timeSlots` property is missing in Nylas typings, but it exists in runtime response
         busySlots = slots.filter(slot=>slot.status === 'busy');
     }
 
