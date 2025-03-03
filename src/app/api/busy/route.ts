@@ -3,7 +3,6 @@ import { ProfileModel } from "@/models/Profile";
 import mongoose from "mongoose";
 import { NextRequest } from "next/server";
 import { TimeSlot } from "nylas";
-import { Result } from "postcss";
 
 export async function GET(req:NextRequest) {
 
@@ -30,9 +29,9 @@ export async function GET(req:NextRequest) {
 
     let busySlots:TimeSlot[] = [];
     if(nylasBusyResult.data?.[0]){
-        // @ts-ignore
+        // @ts-expect-error
         const slots = nylasBusyResult.data?.[0].timeSlots as TimeSlot[];
-        // @ts-ignore
+        // @ts-expect-error
         busySlots = slots.filter(slot=>slot.status === 'busy');
     }
 
