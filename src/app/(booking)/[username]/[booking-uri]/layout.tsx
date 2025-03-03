@@ -6,23 +6,25 @@ import { ReactNode } from "react";
 
 type LayoutProps = {
     children: ReactNode;
-    params:{
+    params:Promise<{
         username:string,
         "booking-uri":string
-    }
-}
+    }>;
+};
 
-export default async function BookingBoxLayout(props:LayoutProps){
-    mongoose.connect(process.env.MONGODB_URI!);
+export default async function BookingBoxLayout({params,children}:LayoutProps){
+        mongoose.connect(process.env.MONGODB_URI!);
+         const resolvedParams = await params; // Await params here
+
         const profileDoc = await ProfileModel.findOne({
-            username: props.params.username,
+            username: resolvedParams.username,
         });
         if(!profileDoc){
             return '404';
         }
         const etDoc = await EventTypeModel.findOne({
             email: profileDoc.email,
-            uri: props.params?.["booking-uri"]
+            uri: resolvedParams?.["booking-uri"]
         });
         if(!etDoc){
             return '404';
@@ -45,7 +47,7 @@ export default async function BookingBoxLayout(props:LayoutProps){
                         </div>
                     </div>
                     <div className="bg-white/80 grow">
-                        {props.children}
+                        {children}
                     </div>
                 </div>
             </div>
