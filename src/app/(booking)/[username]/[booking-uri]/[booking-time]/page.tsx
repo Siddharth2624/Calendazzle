@@ -3,13 +3,8 @@ import axios from "axios";
 import { format } from "date-fns";
 import { FormEvent, useState } from "react";
 
-type PageProps = {
-    params:{
-        username:string,
-        "booking-uri":string,
-        "booking-time":string
-    };
-};
+type PageProps = Awaited<ReturnType<() => { params: { username: string; "booking-uri": string; "booking-time": string } }>>;
+
 export default function BookingFormPage(props:PageProps){
     const [guestName, setGuestName] = useState('');
     const [guestEmail, setGuestEmail] = useState('');
