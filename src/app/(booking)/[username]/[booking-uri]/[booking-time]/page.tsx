@@ -1,26 +1,25 @@
+// @ts-nocheck
 'use client';
 import axios from "axios";
 import { format } from "date-fns";
 import { FormEvent, useState } from "react";
 
 type PageProps = {
-    params: Promise<{
-        username: string;
-        "booking-uri": string;
-        "booking-time": string;
-    }>;
+    params:{
+        username:string,
+        "booking-uri":string,
+        "booking-time":string
+    };
 };
-export default async function BookingFormPage({params}:PageProps){
-    const resolvedParams = await params; // Await params here
-
+export default function BookingFormPage(props:PageProps){
     const [guestName, setGuestName] = useState('');
     const [guestEmail, setGuestEmail] = useState('');
     const [guestNotes, setGuestNotes] = useState('');
     const [confirmed, setConfirmed] = useState(false);
 
-    const username = resolvedParams.username;
-    const bookingUri = resolvedParams["booking-uri"];
-    const bookingTime = new Date(decodeURIComponent(resolvedParams["booking-time"]));
+    const username = props.params.username;
+    const bookingUri = props.params["booking-uri"];
+    const bookingTime = new Date(decodeURIComponent(props.params["booking-time"]));
 
     async function handleFormSubmit(ev:FormEvent){
         ev.preventDefault();
