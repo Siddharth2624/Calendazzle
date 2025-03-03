@@ -20,6 +20,7 @@ export default async function EventTypesPage() {
             <div className=" mt-4 border border-b-0 rounded-xl overflow-hidden mb-4">
                 {eventTypes.map(e=>(
                     <div 
+                    key={e.id}
                     className="block p-2 border-b">
                     <Link href={'/dashboard/event-types/edit/'+e.id}>
                         {e.title}

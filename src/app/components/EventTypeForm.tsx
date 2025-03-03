@@ -89,7 +89,8 @@ export default function EventTypeForm({doc,username=''}:{doc?:IEventType,usernam
                         {weekdaysNames.map((day) => {
                             const active = bookingTimes?.[day]?.active;
                             return (
-                                <div className="grid grid-cols-2 gap-2 items-center"
+                                <div
+                                className="grid grid-cols-2 gap-2 items-center"
                                 key={day}>
                                     <label className="flex gap-1 !mb-0 !p-0">
                                         <input 

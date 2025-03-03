@@ -17,7 +17,7 @@ export default function TimeSelect({
     return(
         <select value={value} onChange={(e) => onChange(e.target.value)}>
             {times.map((time,i) => (
-                <option key={i} value={time}>{time}</option>
+                <option key={time} value={time}>{time}</option>
             ))}
         </select>
     )
