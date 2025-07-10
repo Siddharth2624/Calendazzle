@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { nylas, nylasConfig } from "@/libs/nylas";
 import { session } from "@/libs/session";
 import { ProfileModel } from "@/models/Profile";
@@ -6,13 +5,10 @@ import mongoose from "mongoose";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-  console.log("🟡 Entered OAuth Exchange Route");
-
   const url = new URL(req.url || "");
   const code = url.searchParams.get("code");
 
   if (!code) {
-    console.log("❌ Missing code param");
     return Response.json({ error: "Missing code" }, { status: 400 });
   }
 
@@ -41,7 +37,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("❌ Error in Nylas OAuth Exchange:", err);
+    console.error("❌ OAuth exchange failed:", err);
     return Response.json({ error: "OAuth exchange failed" }, { status: 500 });
   }
 }
