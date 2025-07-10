@@ -3,38 +3,34 @@
 import axios from "axios";
 import { format } from "date-fns";
 import { FormEvent, useState } from "react";
+import { useParams } from "next/navigation";
 
-interface PageProps {
-  params: Record<string, string>; // Handle dashed keys safely
-}
-
-export default function BookingFormPage({ params }: PageProps) {
+export default function BookingFormPage() {
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestNotes, setGuestNotes] = useState('');
   const [confirmed, setConfirmed] = useState(false);
 
-  const username = params.username;
-  const bookingUri = params["booking-uri"];
-  const bookingTime = new Date(decodeURIComponent(params["booking-time"]));
+  const params = useParams();
+
+  const username = params?.username as string;
+  const bookingUri = params?.['booking-uri'] as string;
+  const bookingTimeRaw = params?.['booking-time'] as string;
+
+  if (!username || !bookingUri || !bookingTimeRaw) {
+    return <div className="p-8 text-red-500">Invalid booking URL.</div>;
+  }
+
+  const bookingTime = new Date(decodeURIComponent(bookingTimeRaw));
 
   async function handleFormSubmit(ev: FormEvent) {
     ev.preventDefault();
-
-    const data = {
-      guestName,
-      guestEmail,
-      guestNotes,
-      username,
-      bookingUri,
-      bookingTime
-    };
-
+    const data = { guestName, guestEmail, guestNotes, username, bookingUri, bookingTime };
     try {
       await axios.post('/api/bookings', data);
       setConfirmed(true);
-    } catch (error) {
-      console.error("Error submitting booking:", error);
+    } catch (err) {
+      console.error("Booking failed", err);
       alert("Booking failed. Please try again.");
     }
   }
