@@ -1,4 +1,4 @@
-'use server';
+
 import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 import { session } from "@/libs/session";
