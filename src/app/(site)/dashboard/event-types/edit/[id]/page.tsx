@@ -4,11 +4,13 @@ import { EventTypeModel } from "@/models/EventType";
 import { ProfileModel } from "@/models/Profile";
 import mongoose from "mongoose";
 
-export default async function EditEventTypePage({
-  params,
-}: {
-  params: { id: string };
-}) {
+type PageProps = {
+  params:{
+    id: string;
+  };
+};
+
+export default async function EditEventTypePage({ params }: PageProps) {
   await mongoose.connect(process.env.MONGODB_URI!);
 
   const eventTypeDoc = await EventTypeModel.findById(params.id);
