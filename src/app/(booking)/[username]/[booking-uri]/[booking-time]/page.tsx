@@ -17,15 +17,22 @@ export default function BookingFormPage() {
   const bookingUri = params?.['booking-uri'] as string;
   const bookingTimeRaw = params?.['booking-time'] as string;
 
+  // Validate required params
   if (!username || !bookingUri || !bookingTimeRaw) {
     return <div className="p-8 text-red-500">Invalid booking URL.</div>;
   }
 
-  const bookingTime = new Date(decodeURIComponent(bookingTimeRaw));
+  let bookingTime: Date;
+  try {
+    bookingTime = new Date(decodeURIComponent(bookingTimeRaw));
+  } catch (err) {
+    return <div className="p-8 text-red-500">Invalid booking time format.</div>;
+  }
 
   async function handleFormSubmit(ev: FormEvent) {
     ev.preventDefault();
     const data = { guestName, guestEmail, guestNotes, username, bookingUri, bookingTime };
+
     try {
       await axios.post('/api/bookings', data);
       setConfirmed(true);
