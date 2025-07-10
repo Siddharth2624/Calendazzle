@@ -2,7 +2,7 @@ import Nylas from "nylas";
 
 export const nylasConfig = {
     clientId: process.env.NYLAS_CLIENT_ID!,
-    callbackUri: "https://sid-calendazzle.vercel.app/api/oauth/exchange",
+    callbackUri: process.env.NYLAS_CALLBACK_URI!,
     apiKey: process.env.NYLAS_API_KEY!,
     apiUri: process.env.NYLAS_API_URI!,
 };
