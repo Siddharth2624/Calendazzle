@@ -1,4 +1,4 @@
-'use server';
+
 import RightNav from "@/app/components/RightNav";
 import {session} from "@/libs/session";
 import {CalendarDays} from "lucide-react";
