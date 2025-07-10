@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
+  console.log("✅ Received callback from Nylas");
+
   const url = new URL(req.url || "");
   const code = url.searchParams.get("code");
 
@@ -20,16 +22,21 @@ export async function GET(req: NextRequest) {
       redirectUri: nylasConfig.callbackUri,
     });
 
+    // ✅ Connect to MongoDB
     await mongoose.connect(process.env.MONGODB_URI!);
+
+    // ✅ Save or update the user's profile
     await ProfileModel.findOneAndUpdate(
       { email },
       { grantId },
       { upsert: true, new: true }
     );
 
+    // ✅ Set session email
     await session().set("email", email);
-    console.log("✅ Session email set:", email);
+    console.log("📨 Session email set to:", email);
 
+    // ✅ Redirect to homepage
     return new Response(null, {
       status: 302,
       headers: {
@@ -37,7 +44,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("❌ OAuth exchange failed:", err);
+    console.error("❌ OAuth Exchange Error:", err);
     return Response.json({ error: "OAuth exchange failed" }, { status: 500 });
   }
 }

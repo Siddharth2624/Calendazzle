@@ -1,11 +1,16 @@
-"use client";
+'use client';
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function RightNav({ email }: { email: string }) {
-  const hasLoggedOut =
-    typeof window !== "undefined" &&
-    window.location.href.includes("logged-out=1");
+  const [hasLoggedOut, setHasLoggedOut] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasLoggedOut(window.location.href.includes("logged-out=1"));
+    }
+  }, []);
 
   if (email && !hasLoggedOut) {
     return (
@@ -16,14 +21,14 @@ export default function RightNav({ email }: { email: string }) {
         <Link href="/api/logout">Logout</Link>
       </nav>
     );
-  } else {
-    return (
-      <nav className="flex items-center gap-4">
-        <Link href="/api/auth">Sign in</Link>
-        <Link href="/about" className="bg-blue-600 text-white py-2 px-2 rounded-full">
-          Get Started
-        </Link>
-      </nav>
-    );
   }
+
+  return (
+    <nav className="flex items-center gap-4">
+      <Link href="/api/auth">Sign in</Link>
+      <Link href="/about" className="bg-blue-600 text-white py-2 px-2 rounded-full">
+        Get Started
+      </Link>
+    </nav>
+  );
 }
