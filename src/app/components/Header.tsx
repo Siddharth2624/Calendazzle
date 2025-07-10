@@ -4,6 +4,7 @@ import {session} from "@/libs/session";
 import {CalendarDays} from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic"; // Ensure it's not cached
 export default async function Header() {
   const email = await session().get('email');
   return (
