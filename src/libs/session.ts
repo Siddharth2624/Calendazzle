@@ -1,13 +1,17 @@
-import nextAppSession from "next-app-session"
+import nextAppSession from "next-app-session";
 
-
-//data type
 type MySessionData = {
-    grantId?: string,
-    email?: string
-}
+  email?: string;
+  grantId?: string;
+};
 
 export const session = nextAppSession<MySessionData>({
-    name: "calendazzle_session",
-    secret: process.env.SECRET
+  name: "calendazzle_session",
+  secret: process.env.SECRET!,
+  cookie: {
+    path: '/',
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: true, // make sure it's true for production
+  },
 });
