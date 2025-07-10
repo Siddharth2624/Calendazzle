@@ -4,25 +4,23 @@ import { EventTypeModel } from "@/models/EventType";
 import { ProfileModel } from "@/models/Profile";
 import mongoose from "mongoose";
 
-type PageProps = {
-    params: {
-        id: string;
-    }
-}
-export default async function EditEventTypePage({params}:PageProps){
-    await mongoose.connect(process.env.MONGODB_URI!);
-    const eventTypeDoc = await EventTypeModel.findOne({_id: params.id});
-    const email = await session().get("email");
-    const profileDoc = await ProfileModel.findOne({email});
+export default async function EditEventTypePage({ params }: { params: { id: string } }) {
+  await mongoose.connect(process.env.MONGODB_URI!);
 
-    if(!eventTypeDoc){
-        return '404';
-    }
-    return(
-        <div>
-            <EventTypeForm
-            username = {profileDoc.username || ''}
-            doc ={JSON.parse(JSON.stringify(eventTypeDoc))}/>
-        </div>
-    )
+  const eventTypeDoc = await EventTypeModel.findById(params.id);
+  const email = await session().get("email");
+  const profileDoc = await ProfileModel.findOne({ email });
+
+  if (!eventTypeDoc) {
+    return <div>404 - Event Type Not Found</div>;
+  }
+
+  return (
+    <div>
+      <EventTypeForm
+        username={profileDoc?.username || ""}
+        doc={JSON.parse(JSON.stringify(eventTypeDoc))}
+      />
+    </div>
+  );
 }
