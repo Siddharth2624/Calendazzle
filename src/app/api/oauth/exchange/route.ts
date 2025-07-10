@@ -1,50 +1,40 @@
-import { nylas, nylasConfig } from "@/libs/nylas";
-import { session } from "@/libs/session";
-import { ProfileModel } from "@/models/Profile";
+import {nylas, nylasConfig} from "@/libs/nylas";
+import {session} from "@/libs/session";
+import {ProfileModel} from "@/models/Profile";
 import mongoose from "mongoose";
-import { NextRequest } from "next/server";
+import {redirect} from "next/navigation";
+import {NextRequest} from "next/server";
 
 export async function GET(req: NextRequest) {
-  console.log("✅ Received callback from Nylas");
-
-  const url = new URL(req.url || "");
-  const code = url.searchParams.get("code");
+  console.log("Received callback from Nylas");
+  const url = new URL(req.url as string);
+  const code = url.searchParams.get('code');
 
   if (!code) {
-    return Response.json({ error: "Missing code" }, { status: 400 });
+    return Response.json("No authorization code returned from Nylas", {status: 400});
   }
 
-  try {
-    const { grantId, email } = await nylas.auth.exchangeCodeForToken({
-      code,
-      clientId: nylasConfig.clientId,
-      clientSecret: nylasConfig.apiKey,
-      redirectUri: nylasConfig.callbackUri,
-    });
+  const codeExchangePayload = {
+    clientSecret: nylasConfig.apiKey,
+    clientId: nylasConfig.clientId as string,
+    redirectUri: nylasConfig.callbackUri,
+    code,
+  };
 
-    // ✅ Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI!);
+  const response = await nylas.auth.exchangeCodeForToken(codeExchangePayload);
+  const { grantId, email } = response;
 
-    // ✅ Save or update the user's profile
-    await ProfileModel.findOneAndUpdate(
-      { email },
-      { grantId },
-      { upsert: true, new: true }
-    );
+  await mongoose.connect(process.env.MONGODB_URI as string);
 
-    // ✅ Set session email
-    await session().set("email", email);
-    console.log("📨 Session email set to:", email);
-
-    // ✅ Redirect to homepage
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: process.env.NEXT_PUBLIC_URL + "/",
-      },
-    });
-  } catch (err) {
-    console.error("❌ OAuth Exchange Error:", err);
-    return Response.json({ error: "OAuth exchange failed" }, { status: 500 });
+  const profileDoc = await ProfileModel.findOne({email});
+  if (profileDoc) {
+    profileDoc.grantId = grantId;
+    await profileDoc.save();
+  } else {
+    await ProfileModel.create({email, grantId});
   }
+
+  await session().set('email', email);
+
+  redirect('/');
 }
