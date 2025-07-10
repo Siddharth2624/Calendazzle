@@ -36,5 +36,5 @@ export async function GET(req: NextRequest) {
 
   await session().set('email', email);
 
-  redirect('/');
+  redirect('/dashboard');
 }
