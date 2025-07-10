@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { CalendarDays } from "lucide-react";
+import { session } from "@/libs/session";
 import RightNav from "./RightNav";
 
 export const dynamic = "force-dynamic";
 
-export default function Header() {
+export default async function Header() {
+  const email = await session().get("email");
+  console.log("📨 Header session email:", email);
+
   return (
     <header className="flex gap-4 justify-between py-6 text-gray-600">
       <div className="flex items-center gap-10">
@@ -18,7 +22,7 @@ export default function Header() {
           <Link href="/pricing">Pricing</Link>
         </nav>
       </div>
-      <RightNav />
+      <RightNav email={email || ""} />
     </header>
   );
 }
