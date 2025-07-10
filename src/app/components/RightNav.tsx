@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { session } from "@/libs/session";
 
+export const dynamic = "force-dynamic"; // <--- this is required here too
+
 export default async function RightNav() {
   const email = await session().get("email");
-  const hasLoggedOut = false; // You can skip this unless logout URL param is strictly needed
 
-  if (email && !hasLoggedOut) {
+  if (email) {
     return (
       <nav className="flex items-center gap-4">
         <Link href="/dashboard" className="bg-blue-600 text-white py-2 px-2 rounded-full">Dashboard</Link>
