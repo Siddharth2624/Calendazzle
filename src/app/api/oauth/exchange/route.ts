@@ -28,14 +28,14 @@ export async function GET(req: NextRequest) {
       code
     });
 
-    const response = await nylas.auth.exchangeCodeForToken(codeExchangePayload);
+    const nylasResponse = await nylas.auth.exchangeCodeForToken(codeExchangePayload);
     
-    if (!response?.email) {
+    if (!nylasResponse?.email) {
       console.error("No email received from Nylas token exchange");
       return NextResponse.redirect(new URL('/?error=no_email', req.url));
     }
 
-    const { grantId, email } = response;
+    const { grantId, email } = nylasResponse;
     console.log("Received response from Nylas:", { email, grantId });
 
     await mongoose.connect(process.env.MONGODB_URI as string);
@@ -51,9 +51,11 @@ export async function GET(req: NextRequest) {
     const sess = await session();
     await sess.set('email', email);
     
-    console.log("Session set with email:", email);
-
-    return NextResponse.redirect(new URL('/', req.url));
+    console.log('Setting session with email:', email);
+    
+    // Create response with redirect
+    const redirectUrl = new URL('/dashboard', req.url);
+    return NextResponse.redirect(redirectUrl);
   } catch (error) {
     console.error("Error in OAuth exchange:", error);
     return NextResponse.redirect(new URL('/?error=oauth_error', req.url));
