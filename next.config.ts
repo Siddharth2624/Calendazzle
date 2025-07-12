@@ -10,6 +10,7 @@ const config = {
     // This setting is required for production deployment
     // Remove this when you've fixed all the TS errors
     ignoreBuildErrors: true,
+    output: 'standalone',
   },
 };
 
