@@ -4,42 +4,45 @@ import { Clock, Info } from "lucide-react";
 import mongoose from "mongoose";
 import { ReactNode, Suspense } from "react";
 
-interface BookingParams {
-  username: string;
-  "booking-uri": string;
-}
+type LayoutProps = {
+  children: ReactNode;
+  params: {
+    username: string;
+    "booking-uri": string;
+  };
+};
 
 // The layout component must be an async Server Component
-export default async function BookingBoxLayout({
-  children,
-  params,
-}: {
-  children: ReactNode;
-  params: BookingParams;
-}) {
-  // Connect to MongoDB outside of the component rendering
-  await mongoose.connect(process.env.MONGODB_URI!);
-
-  // Fetch data outside of component rendering
-  const profileDoc = await ProfileModel.findOne({
-    username: params.username,
-  });
-
-  if (!profileDoc) {
-    return <ErrorCard title="404" message="Profile Not Found" />;
-  }
-
-  const etDoc = await EventTypeModel.findOne({
-    email: profileDoc.email,
-    uri: params["booking-uri"],
-  });
-
-  if (!etDoc) {
-    return <ErrorCard title="404" message="Event Type Not Found" />;
-  }
-
+export default function BookingBoxLayout(props: LayoutProps) {
   return (
     <Suspense fallback={<LoadingCard />}>
+      <BookingContent {...props} />
+    </Suspense>
+  );
+}
+
+async function BookingContent({ children, params }: LayoutProps) {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI!);
+
+    const profileDoc = await ProfileModel.findOne({
+      username: params.username,
+    });
+
+    if (!profileDoc) {
+      return <ErrorCard title="404" message="Profile Not Found" />;
+    }
+
+    const etDoc = await EventTypeModel.findOne({
+      email: profileDoc.email,
+      uri: params["booking-uri"],
+    });
+
+    if (!etDoc) {
+      return <ErrorCard title="404" message="Event Type Not Found" />;
+    }
+
+    return (
       <div
         className="flex items-center h-screen bg-cover"
         style={{ backgroundImage: "url('/background.jpg')" }}
@@ -65,8 +68,16 @@ export default async function BookingBoxLayout({
           </div>
         </div>
       </div>
-    </Suspense>
-  );
+    );
+  } catch (error) {
+    console.error("Error in BookingContent:", error);
+    return (
+      <ErrorCard
+        title="Error"
+        message="Something went wrong. Please try again later."
+      />
+    );
+  }
 }
 
 function LoadingCard() {
