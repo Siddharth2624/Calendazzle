@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     console.log('Setting session with email:', email);
     
     // Create response with redirect
-    const redirectUrl = new URL('/dashboard', req.url);
+    const redirectUrl = new URL('/', req.url);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
     console.error("Error in OAuth exchange:", error);
