@@ -10,6 +10,10 @@ export const session = nextAppSession<MySessionData>({
   name: 'calendazzle_session',
   secret: process.env.SECRET,
   cookie: {
-    httpOnly: false,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60, // 7 days
   },
 });
