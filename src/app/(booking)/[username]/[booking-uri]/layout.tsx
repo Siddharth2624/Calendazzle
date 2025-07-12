@@ -4,20 +4,25 @@ import { Clock, Info } from "lucide-react";
 import mongoose from "mongoose";
 import { ReactNode } from "react";
 
-interface PageParams {
-  username: string;
-  "booking-uri": string;
-}
-
-type LayoutProps = {
-  children: ReactNode;
-  params: PageParams;
-};
-
-export default async function BookingBoxLayout({
+// layout.tsx must be synchronous!
+export default function BookingBoxLayout({
   children,
   params,
-}: LayoutProps) {
+}: {
+  children: ReactNode;
+  params: { username: string; "booking-uri": string };
+}) {
+  return <BookingContent params={params}>{children}</BookingContent>;
+}
+
+// Async component inside the same file
+async function BookingContent({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: { username: string; "booking-uri": string };
+}) {
   try {
     await mongoose.connect(process.env.MONGODB_URI!);
 
@@ -27,12 +32,7 @@ export default async function BookingBoxLayout({
 
     if (!profileDoc) {
       return (
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-center p-8 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-red-600">404</h2>
-            <p className="text-gray-600">Profile Not Found</p>
-          </div>
-        </div>
+        <ErrorCard title="404" message="Profile Not Found" />
       );
     }
 
@@ -43,12 +43,7 @@ export default async function BookingBoxLayout({
 
     if (!etDoc) {
       return (
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-center p-8 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-red-600">404</h2>
-            <p className="text-gray-600">Event Type Not Found</p>
-          </div>
-        </div>
+        <ErrorCard title="404" message="Event Type Not Found" />
       );
     }
 
@@ -64,13 +59,9 @@ export default async function BookingBoxLayout({
                 {etDoc.title}
               </h1>
               <div className="grid gap-y-4 grid-cols-[40px_1fr] text-left">
-                <div>
-                  <Clock />
-                </div>
+                <div><Clock /></div>
                 <div>{etDoc.length}min</div>
-                <div>
-                  <Info />
-                </div>
+                <div><Info /></div>
                 <div>{etDoc.description}</div>
               </div>
             </div>
@@ -79,17 +70,22 @@ export default async function BookingBoxLayout({
         </div>
       </div>
     );
-  } catch (error) {
-    console.error("Error in BookingBoxLayout:", error);
+  } catch (err) {
+    console.error("Error in BookingContent:", err);
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center p-8 bg-white rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold text-red-600">Error</h2>
-          <p className="text-gray-600">
-            Something went wrong. Please try again later.
-          </p>
-        </div>
-      </div>
+      <ErrorCard title="Error" message="Something went wrong. Please try again later." />
     );
   }
+}
+
+// Simple error component
+function ErrorCard({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="text-center p-8 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold text-red-600">{title}</h2>
+        <p className="text-gray-600">{message}</p>
+      </div>
+    </div>
+  );
 }
