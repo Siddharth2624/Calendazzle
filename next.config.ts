@@ -1,4 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+const config = {
+  experimental: {
+    serverActions: true,
+  },
+};
 
-export default nextConfig;
+export default config;
